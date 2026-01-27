@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Complaint = require("../models/Complaint");
 
-/* ✅ POST Complaint (Already Working) */
+/* ✅ POST Complaint */
 router.post("/", async (req, res) => {
   try {
     const { title, category, description, ward, geoLocation, image } = req.body;
@@ -17,7 +17,6 @@ router.post("/", async (req, res) => {
     });
 
     const savedComplaint = await newComplaint.save();
-
     res.status(201).json(savedComplaint);
   } catch (error) {
     console.log("Complaint Submit Error:", error);
@@ -25,11 +24,10 @@ router.post("/", async (req, res) => {
   }
 });
 
-/* ✅ GET ALL COMPLAINTS (Recovery Feature Needs This) */
+/* ✅ GET ALL COMPLAINTS */
 router.get("/", async (req, res) => {
   try {
     const complaints = await Complaint.find().sort({ createdAt: -1 });
-
     res.status(200).json(complaints);
   } catch (error) {
     console.log("Fetch Complaints Error:", error);
@@ -37,7 +35,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-/* ✅ GET COMPLAINT BY ID (Status Tracking Needs This) */
+/* ✅ GET COMPLAINT BY ID */
 router.get("/:id", async (req, res) => {
   try {
     const complaint = await Complaint.findById(req.params.id);
@@ -52,14 +50,12 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-/* ✅ PATCH UPDATE COMPLAINT (Admin + Worker Workflow Needs This) */
+/* ✅ PATCH UPDATE COMPLAINT (ADMIN + WORKER) */
 router.patch("/:id", async (req, res) => {
   try {
-    const complaintId = req.params.id;
-
     const updatedComplaint = await Complaint.findByIdAndUpdate(
-      complaintId,
-      { $set: req.body }, // ✅ Updates status, assignedWorker, proof, etc.
+      req.params.id,
+      req.body,
       { new: true }
     );
 

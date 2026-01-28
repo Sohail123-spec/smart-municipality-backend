@@ -3,8 +3,7 @@ const router = express.Router();
 const Complaint = require("../models/Complaint");
 
 
-
-/* ✅ POST Complaint (Citizen Submits Complaint) */
+// ✅ POST Complaint (Already Working)
 router.post("/", async (req, res) => {
   try {
     const { title, category, description, ward, geoLocation, image } = req.body;
@@ -19,32 +18,29 @@ router.post("/", async (req, res) => {
     });
 
     const savedComplaint = await newComplaint.save();
-
     res.status(201).json(savedComplaint);
+
   } catch (error) {
-    console.log("❌ Complaint Submit Error:", error);
+    console.log("Complaint Submit Error:", error);
     res.status(500).json({ message: "Server Error" });
   }
 });
 
 
-
-/* ✅ GET ALL COMPLAINTS (FIXED FOR MONGODB MEMORY LIMIT) */
+// ✅ GET ALL COMPLAINTS (Safe Fetch Limit)
 router.get("/", async (req, res) => {
   try {
-    const complaints = await Complaint.find().limit(100);
-       // ✅ FIX prevents Render crash
-
+    const complaints = await Complaint.find().limit(50);
     res.status(200).json(complaints);
+
   } catch (error) {
-    console.log("❌ Fetch Complaints Error:", error);
+    console.log("Fetch Complaints Error:", error);
     res.status(500).json({ message: "Failed to fetch complaints" });
   }
 });
 
 
-
-/* ✅ GET COMPLAINT BY ID (Citizen Status Tracking) */
+// ✅ GET COMPLAINT BY ID
 router.get("/:id", async (req, res) => {
   try {
     const complaint = await Complaint.findById(req.params.id);
@@ -54,21 +50,19 @@ router.get("/:id", async (req, res) => {
     }
 
     res.status(200).json(complaint);
+
   } catch (error) {
     res.status(400).json({ message: "Invalid Complaint ID" });
   }
 });
 
 
-
-/* ✅ PATCH COMPLAINT (Admin Updates Status + Worker Uploads Proof) */
+// ✅ PATCH Complaint (Status Updates + Proof Upload)
 router.patch("/:id", async (req, res) => {
   try {
     const updatedComplaint = await Complaint.findByIdAndUpdate(
       req.params.id,
-      {
-        $set: req.body, // ✅ allows updating only sent fields
-      },
+      req.body,
       { new: true }
     );
 
@@ -77,12 +71,33 @@ router.patch("/:id", async (req, res) => {
     }
 
     res.status(200).json(updatedComplaint);
+
   } catch (error) {
-    console.log("❌ Complaint Update Error:", error);
+    console.log("Update Error:", error);
     res.status(500).json({ message: "Failed to update complaint" });
   }
 });
 
 
+// ✅ ✅ NEW FEATURE: PERMANENT DELETE FROM BIN
+router.delete("/:id", async (req, res) => {
+  try {
+    const deletedComplaint = await Complaint.findByIdAndDelete(req.params.id);
 
+    if (!deletedComplaint) {
+      return res.status(404).json({ message: "Complaint Not Found" });
+    }
+
+    res.status(200).json({
+      message: "✅ Complaint Permanently Deleted Successfully",
+    });
+
+  } catch (error) {
+    console.log("Delete Error:", error);
+    res.status(500).json({ message: "Failed to delete complaint" });
+  }
+});
+
+
+// ✅ Export Router
 module.exports = router;

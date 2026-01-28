@@ -32,9 +32,8 @@ router.post("/", async (req, res) => {
 /* ✅ GET ALL COMPLAINTS (FIXED FOR MONGODB MEMORY LIMIT) */
 router.get("/", async (req, res) => {
   try {
-    const complaints = await Complaint.find()
-      .sort({ createdAt: -1 })
-      .limit(200); // ✅ FIX prevents Render crash
+    const complaints = await Complaint.find().limit(100);
+       // ✅ FIX prevents Render crash
 
     res.status(200).json(complaints);
   } catch (error) {

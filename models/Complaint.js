@@ -6,7 +6,10 @@ const complaintSchema = new mongoose.Schema(
     category: String,
     description: String,
     ward: String,
-
+    location: {
+  type: String,
+  default: "Not Provided",
+},
     geoLocation: {
       lat: Number,
       lng: Number,
@@ -24,16 +27,28 @@ const complaintSchema = new mongoose.Schema(
       default: null,
     },
 
-    /* ✅ NEW: Worker Proof Upload */
+    /* ✅ Worker Proof Upload */
     completionImage: {
       type: String,
       default: "",
     },
 
-    /* ✅ NEW: Worker Proof Location */
+    /* ✅ Worker Proof Location */
     workerGeoLocation: {
       lat: Number,
       lng: Number,
+    },
+
+    /* ✅ NEW: Complaint Priority */
+    priority: {
+      type: String,
+      default: "Medium",
+    },
+
+    /* ✅ NEW: Complaint Source */
+    source: {
+      type: String,
+      default: "Citizen",
     },
   },
   {
